@@ -4,6 +4,8 @@
 	session_set_cookie_params(time()+$lifetime, $path, $domain, $secure, $httponly);
 	session_start();
 
+	$totalBill = 0;
+	$table_label = $errMsg = $sql = "";
 	$orderNoArray = array();
 
 	$showOrderTable = '<table style="width:100%" border="1px" cellpadding="5px">';
@@ -47,10 +49,28 @@
 
 	$showOrderTable .= '</tr>';
 
+	if (isset($_POST['prevOrderCountBtn']) and $_POST['prevOrderCount'] != "") {
+		$prevOrderCount = $_POST['prevOrderCount'];
+		if(!preg_match("/^[0-9]*$/", $prevOrderCount)) { //Regular expression comparison
+			//If input first name is invalid::
+			$errMsg = "<span style='color: red;'>Invalid input!</span>"; 
+			//$errFlag = 1;
+		}
+		else{
+			$table_label = "<span style='color: green;'>Previous Order Table:</span>";
+			$sql = "SELECT order_table.*
+					FROM order_table
+					WHERE order_table.orderDeliveryComplete='1';";
+		}
+	}
+	else{
+		$table_label = "<span style='color: blue;'>Current Order Table:</span>";
+		$sql = "SELECT order_table.*
+				FROM order_table
+				WHERE order_table.orderDeliveryComplete='0';";
+	}
 
-	$sql = "SELECT order_table.*
-			FROM order_table
-			WHERE order_table.orderDeliveryComplete='0';";
+	
 	$result = $conn->query($sql);
 
 	if ($result->num_rows > 0) {
@@ -89,7 +109,9 @@
 				$showOrderTable .= $prodQty;
 				$showOrderTable .= '</td>';
 				$showOrderTable .= '</tr>';
-			}			
+			}
+			$totalBill += $totalPayment;
+
 			$showOrderTable .= '</table>';
 			$showOrderTable .= '</td>';
 
@@ -117,12 +139,18 @@
 			$showOrderTable .= $row['orderTime'];
 			$showOrderTable .= '</td>';
 
-			$showOrderTable .= '<td>';
-			$showOrderTable .= '<input style="background-color: #00cc00; width: 100%; height: 100%; font-weight: bold;" type="submit" name="orderDoneBtn';
-			$showOrderTable .= $orderNo;
-			$showOrderTable .= '" value="Done">';
-			$showOrderTable .= '</td>';
-
+			if (isset($_POST['prevOrderCountBtn']) and $_POST['prevOrderCount'] != "") {
+				$showOrderTable .= '<td style="color: green;">';
+				$showOrderTable .= 'Delivery Complete!';
+				$showOrderTable .= '</td>';
+			}
+			else{
+				$showOrderTable .= '<td>';
+				$showOrderTable .= '<input style="background-color: #00cc00; width: 100%; height: 100%; font-weight: bold;" type="submit" name="orderDoneBtn';
+				$showOrderTable .= $orderNo;
+				$showOrderTable .= '" value="Done">';
+				$showOrderTable .= '</td>';
+			}
 			$showOrderTable .= '</tr>';
 
 			$showOrderTable .= '<tr>';
