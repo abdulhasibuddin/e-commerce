@@ -12,11 +12,20 @@
 </head>
 <body>
 	<form method="post" action="">
-		<label>Order Table:</label>
 		<?php
+			echo $table_label;
+			echo $errMsg;
+
 			echo $showOrderTable;
 			echo "</table>";
+
+			echo "<br><span style='float: right;'>Total Bill = ".$totalBill."</span>";
 		?>
+		<br><br>
+		<label>Show previous orders for </label>
+		<input type="number" name="prevOrderCount">
+		<label> days</label>
+		<input type="submit" name="prevOrderCountBtn" value="Show">
 		<br><br>
 		<a href="showOrderPage.php"><strong>Refresh</strong></a>
 		<br>
