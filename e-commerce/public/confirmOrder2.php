@@ -20,6 +20,7 @@
 	if (isset($_SESSION['checkedProductIdQtyArray'])) {
 		$showOrderTable .= '<table style="width:100%" border="1px" cellpadding="5px">';
 		$showOrderTable .= '<tr>';
+
 		$showOrderTable .= '<th>';
 		$showOrderTable .= 'Product Id';
 		$showOrderTable .= '</th>';
@@ -39,6 +40,11 @@
 		$showOrderTable .= '<th>';
 		$showOrderTable .= 'Total Amount to be Paid';
 		$showOrderTable .= '</th>';
+
+		$showOrderTable .= '<th>';
+		$showOrderTable .= 'Action';
+		$showOrderTable .= '</th>';
+
 		$showOrderTable .= '</tr>';
 
 		$checkedProductIdQtyArray = $_SESSION['checkedProductIdQtyArray'];
@@ -46,7 +52,12 @@
 		foreach ($checkedProductIdQtyArray as $key => $value) {
 			foreach ($value as $key2 => $value2) {
 				foreach ($value2 as $prodId => $prodQty) {
-					if (array_key_exists($prodId, $selectedProductIdArray)) {
+					$deleteOrderedProd = 'deleteOrderedProdBtn'.$prodId;
+					if (isset($_POST[$deleteOrderedProd])) {
+						unset($checkedProductIdQtyArray[$key][$key2][$prodId]);
+						$_SESSION['checkedProductIdQtyArray'] = $checkedProductIdQtyArray;
+					}
+					elseif (array_key_exists($prodId, $selectedProductIdArray)) {
 						$selectedProductIdArray[$prodId] += $prodQty;
 					}
 					else{
@@ -120,15 +131,28 @@
 				$showOrderTable .= '<td>';
 				$showOrderTable .= $total;
 				$showOrderTable .= '</td>';
+
+				$showOrderTable .= '<td>';
+				$showOrderTable .= '<input style="background-color: #ff9999; width: 100%; height: 5vh; font-weight: bold;" type="submit" name="deleteOrderedProdBtn';
+				$showOrderTable .= $prodId;
+				$showOrderTable .= '" value="Delete!">';
+				$showOrderTable .= '</td>';
+
+				$showOrderTable .= '';
+				$showOrderTable .= '';
+
 				$showOrderTable .= '</tr>';
-
-
-				$showOrderTable .= '';
-				$showOrderTable .= '';
 			}
 		}
-		$showOrderTable .= '<tr></tr>';
-		$showOrderTable .= '<tr></tr>';
+		$showOrderTable .= '<tr>';
+		$showOrderTable .= '<td style="background-color: grey;"></td>';
+		$showOrderTable .= '<td style="background-color: grey;"></td>';
+		$showOrderTable .= '<td style="background-color: grey;"></td>';
+		$showOrderTable .= '<td style="background-color: grey;"></td>';
+		$showOrderTable .= '<td style="background-color: grey;"></td>';
+		$showOrderTable .= '<td style="background-color: grey;"></td>';
+		$showOrderTable .= '</tr>';
+
 		$showOrderTable .= '<tr>';
 		$showOrderTable .= '<td style="color: #0000ff; font: italic bold 24px/30px Georgia, serif">';
 		$showOrderTable .= 'Grand Total:';
@@ -202,6 +226,9 @@
 			if (($fName == "" || $eMail == "" || $address == "" || $contact == "") || $errFlag == 1) { 
 				$errorMsg = "<div style='color: red;'>*All fields must be filled!</div>";
 			} //Check for if any required field is empty or there is any error...
+			elseif ($grandTotal == 0) {
+				$errorMsg = "<div style='color: red;'>*No product to deliver!</div>";
+			}
 			else{ //If everything is ok...
 				$orderedProductIdQtyArray = $_SESSION['orderedProductIdQtyArray'];
 
