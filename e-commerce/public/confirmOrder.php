@@ -56,7 +56,7 @@
 				<div id="td2"> <span id="error">* <?php echo $captchaErr; ?></span></div><!--Error messages related to captcha code-->
 			</div>
 		</div>
-
+		<br><br>
 		<input id="confirmBtnId" type="submit" name="confirmOrderBtn" value="Confirm Order!">
 		<input id="resetBtnId" type="submit" name="resetOrder" value="Reset Order!">
 	</form>
